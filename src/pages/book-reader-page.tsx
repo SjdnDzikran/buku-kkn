@@ -32,6 +32,7 @@ import { getBook } from "@/lib/books"
 import {
   getNextPage,
   getPreviousPage,
+  getSwipeDirection,
   getVisiblePages,
 } from "@/lib/reader"
 import { cn } from "@/lib/utils"
@@ -103,6 +104,9 @@ type BookReaderProps = {
 function BookReader({ bookId }: BookReaderProps) {
   const book = getBook(bookId)
   const readerRef = useRef<HTMLElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const touchStartX = useRef(0)
+  const touchStartY = useRef(0)
   const { isWide, width: viewportWidth } = useReaderViewport()
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(book?.pageCount ?? 1)
@@ -138,6 +142,39 @@ function BookReader({ bookId }: BookReaderProps) {
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [loadError, totalPages, isWide])
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section || loadError) {
+      return undefined
+    }
+
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartX.current = event.touches[0]?.clientX ?? 0
+      touchStartY.current = event.touches[0]?.clientY ?? 0
+    }
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      const direction = getSwipeDirection(
+        (event.changedTouches[0]?.clientX ?? 0) - touchStartX.current,
+        (event.changedTouches[0]?.clientY ?? 0) - touchStartY.current
+      )
+
+      if (direction === "next") {
+        setCurrentPage((page) => getNextPage(page, totalPages, isWide))
+      } else if (direction === "previous") {
+        setCurrentPage((page) => getPreviousPage(page, totalPages, isWide))
+      }
+    }
+
+    section.addEventListener("touchstart", handleTouchStart, { passive: true })
+    section.addEventListener("touchend", handleTouchEnd, { passive: true })
+
+    return () => {
+      section.removeEventListener("touchstart", handleTouchStart)
+      section.removeEventListener("touchend", handleTouchEnd)
     }
   }, [loadError, totalPages, isWide])
 
@@ -269,7 +306,10 @@ function BookReader({ bookId }: BookReaderProps) {
         </div>
       </header>
 
-      <section className="flex flex-1 items-start justify-center overflow-auto px-4 py-6 sm:px-8 sm:py-10">
+      <section
+        ref={sectionRef}
+        className="flex flex-1 items-start justify-center overflow-auto px-4 py-6 sm:px-8 sm:py-10"
+      >
         {loadError ? (
           <Alert variant="destructive" className="max-w-lg">
             <HugeiconsIcon icon={Alert02Icon} />

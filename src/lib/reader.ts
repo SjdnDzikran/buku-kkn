@@ -61,3 +61,15 @@ export function getPreviousPage(
   const spreadStart = getSpreadStart(page, totalPages)
   return spreadStart <= 2 ? 1 : spreadStart - 2
 }
+
+export function getSwipeDirection(
+  deltaX: number,
+  deltaY: number,
+  threshold = 50
+): "next" | "previous" | null {
+  if (Math.abs(deltaX) < threshold || Math.abs(deltaX) <= Math.abs(deltaY)) {
+    return null
+  }
+
+  return deltaX < 0 ? "next" : "previous"
+}

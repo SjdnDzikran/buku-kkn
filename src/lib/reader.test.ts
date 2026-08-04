@@ -4,6 +4,7 @@ import {
   clampPage,
   getNextPage,
   getPreviousPage,
+  getSwipeDirection,
   getVisiblePages,
 } from "./reader"
 
@@ -40,5 +41,13 @@ describe("reader navigation", () => {
     expect(getNextPage(68, 69, true)).toBe(68)
     expect(getVisiblePages(72, 73, true)).toEqual([72, 73])
     expect(getNextPage(72, 73, true)).toBe(72)
+  })
+
+  it("classifies horizontal swipes and ignores vertical or tiny drags", () => {
+    expect(getSwipeDirection(-100, 10)).toBe("next")
+    expect(getSwipeDirection(100, 10)).toBe("previous")
+    expect(getSwipeDirection(-30, 5)).toBeNull()
+    expect(getSwipeDirection(10, -100)).toBeNull()
+    expect(getSwipeDirection(-60, -80)).toBeNull()
   })
 })
