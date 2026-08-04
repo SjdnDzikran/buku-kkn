@@ -32,18 +32,18 @@ describe("LibraryPage", () => {
 
     expect(screen.getByAltText("Sampul Buku 1")).toHaveAttribute(
       "src",
-      "/books/covers/buku-1.webp"
+      "/books/covers/akses-lbh.webp"
     )
     expect(
       screen.getByRole("link", { name: "Buka sampul Buku 1" })
-    ).toHaveAttribute("href", "/books/1")
+    ).toHaveAttribute("href", "/books/akses-lbh")
     expect(screen.getByRole("link", { name: "Baca Buku 1" })).toHaveAttribute(
       "href",
-      "/books/1"
+      "/books/akses-lbh"
     )
     expect(screen.getByRole("link", { name: "Baca Buku 4" })).toHaveAttribute(
       "href",
-      "/books/4"
+      "/books/edukasi-umkm"
     )
   })
 })

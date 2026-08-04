@@ -27,7 +27,7 @@ describe("App routes", () => {
 
   it("renders a book reader at its direct route", async () => {
     render(
-      <MemoryRouter initialEntries={["/books/1"]}>
+      <MemoryRouter initialEntries={["/books/akses-lbh"]}>
         <App />
       </MemoryRouter>
     )

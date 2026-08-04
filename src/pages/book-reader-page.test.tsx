@@ -27,21 +27,21 @@ vi.mock("react-pdf", async () => {
       onLoadSuccess: (document: { numPages: number }) => void
     }) => {
       React.useEffect(() => {
-        if (file.includes("Buku4")) {
+        if (file.includes("edukasi-umkm")) {
           queueMicrotask(onLoadError)
           return
         }
 
         const pageCounts: Record<string, number> = {
-          "Buku1-.pdf": 66,
-          "Buku2-.pdf": 69,
-          "Buku3-.pdf": 73,
+          "akses-lbh.pdf": 66,
+          "edukasi-legalitas-pertanian.pdf": 69,
+          "edukasi-peternak.pdf": 73,
         }
         const fileName = file.split("/").at(-1) ?? ""
         onLoadSuccess({ numPages: pageCounts[fileName] ?? 1 })
       }, [file, onLoadError, onLoadSuccess])
 
-      if (file.includes("Buku3")) {
+      if (file.includes("edukasi-peternak")) {
         return <>{loading}</>
       }
 
@@ -57,7 +57,7 @@ import { BookReaderPage } from "./book-reader-page"
 
 function BookSwitcher() {
   const navigate = useNavigate()
-  return <button onClick={() => navigate("/books/2")}>Buka Buku 2</button>
+    return <button onClick={() => navigate("/books/edukasi-legalitas-pertanian")}>Buka Buku 2</button>
 }
 
 function renderReader(path: string) {
@@ -91,7 +91,7 @@ describe("BookReaderPage", () => {
 
   it("loads a known book and exposes reader controls", async () => {
     const user = userEvent.setup()
-    renderReader("/books/1")
+    renderReader("/books/akses-lbh")
 
     expect(
       screen.getByRole("heading", {
@@ -108,7 +108,7 @@ describe("BookReaderPage", () => {
     expect(await screen.findByTestId("pdf-page-2")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: "Unduh PDF" })).toHaveAttribute(
       "href",
-      "/books/Buku1-.pdf"
+      "/books/akses-lbh.pdf"
     )
 
     await user.click(screen.getByRole("button", { name: "Perbesar" }))
@@ -117,7 +117,7 @@ describe("BookReaderPage", () => {
 
   it("resets reading state when switching directly between books", async () => {
     const user = userEvent.setup()
-    renderReader("/books/1")
+    renderReader("/books/akses-lbh")
 
     await user.click(screen.getByRole("button", { name: "Halaman berikutnya" }))
     expect(screen.getByText("Halaman 2 dari 66")).toBeInTheDocument()
@@ -133,11 +133,11 @@ describe("BookReaderPage", () => {
   })
 
   it("shows loading and PDF error states", async () => {
-    const { unmount } = renderReader("/books/3")
+    const { unmount } = renderReader("/books/edukasi-peternak")
     expect(screen.getByLabelText("Memuat buku")).toBeInTheDocument()
     unmount()
 
-    renderReader("/books/4")
+    renderReader("/books/edukasi-umkm")
     expect(await screen.findByRole("alert")).toHaveTextContent("PDF gagal dimuat")
   })
 })
