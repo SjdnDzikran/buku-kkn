@@ -115,6 +115,20 @@ describe("BookReaderPage", () => {
     expect(screen.getByText("125%")).toBeInTheDocument()
   })
 
+  it("turns pages with the keyboard arrow keys", async () => {
+    const user = userEvent.setup()
+    renderReader("/books/akses-lbh")
+
+    expect(await screen.findByTestId("pdf-page-1")).toBeInTheDocument()
+    expect(screen.getByText("Halaman 1 dari 66")).toBeInTheDocument()
+
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByText("Halaman 2 dari 66")).toBeInTheDocument()
+
+    await user.keyboard("{ArrowLeft}")
+    expect(screen.getByText("Halaman 1 dari 66")).toBeInTheDocument()
+  })
+
   it("resets reading state when switching directly between books", async () => {
     const user = userEvent.setup()
     renderReader("/books/akses-lbh")

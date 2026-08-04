@@ -115,6 +115,32 @@ function BookReader({ bookId }: BookReaderProps) {
   }, [])
   const handleLoadError = useCallback(() => setLoadError(true), [])
 
+  useEffect(() => {
+    if (loadError) {
+      return undefined
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+        return
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault()
+        setCurrentPage((page) => getPreviousPage(page, totalPages, isWide))
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault()
+        setCurrentPage((page) => getNextPage(page, totalPages, isWide))
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [loadError, totalPages, isWide])
+
   if (!book) {
     return (
       <main className="mx-auto flex min-h-svh w-full max-w-xl items-center px-5 py-16">
