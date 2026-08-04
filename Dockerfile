@@ -21,6 +21,11 @@ FROM nginx:alpine AS runtime
 RUN rm -f /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# nginx:alpine's mime.types maps "js" but not "mjs", so PDF.js's module worker
+# is served as application/octet-stream and rejected by browsers. Add mjs to
+# the JavaScript MIME mapping.
+RUN sed -i '/application\/javascript/ s/ js;/ js mjs;/' /etc/nginx/mime.types
+
 # Static build output only — no node_modules, no source, no .git.
 COPY --from=builder /app/dist /usr/share/nginx/html
 
